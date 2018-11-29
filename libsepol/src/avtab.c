@@ -133,6 +133,33 @@ avtab_insert_node(avtab_t * h, int hvalue, avtab_ptr_t prev, avtab_key_t * key,
 	return newnode;
 }
 
+int avtab_remove_node(avtab_t *h, avtab_ptr_t node)
+{
+	if (!h || !h->htable)
+		return SEPOL_ENOMEM;
+	int hvalue = avtab_hash(&node->key, h->mask);
+	avtab_ptr_t prev, cur;
+	for (prev = NULL, cur = h->htable[hvalue]; cur; prev = cur, cur = cur->next) {
+		if (cur == node)
+			break;
+	}
+	if (cur == NULL)
+		return SEPOL_ENOENT;
+
+	// Detach from hash table
+	if (prev)
+		prev->next = node->next;
+	else
+		h->htable[hvalue] = node->next;
+	h->nel--;
+
+	// Free memory
+	if (node->key.specified & AVTAB_XPERMS)
+		free(node->datum.xperms);
+	free(node);
+	return 0;
+}
+
 int avtab_insert(avtab_t * h, avtab_key_t * key, avtab_datum_t * datum)
 {
 	int hvalue;

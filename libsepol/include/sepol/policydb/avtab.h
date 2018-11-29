@@ -106,6 +106,7 @@ typedef struct avtab {
 
 extern int avtab_init(avtab_t *);
 extern int avtab_alloc(avtab_t *, uint32_t);
+extern int avtab_remove_node(avtab_t *h, avtab_ptr_t node);
 extern int avtab_insert(avtab_t * h, avtab_key_t * k, avtab_datum_t * d);
 
 extern avtab_datum_t *avtab_search(avtab_t * h, avtab_key_t * k);
